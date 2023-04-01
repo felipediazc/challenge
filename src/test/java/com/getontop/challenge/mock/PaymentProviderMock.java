@@ -3,7 +3,7 @@ package com.getontop.challenge.mock;
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
 import com.getontop.challenge.exception.PaymentException;
-import com.getontop.challenge.port.Payment;
+import com.getontop.challenge.port.PaymentProvider;
 import com.getontop.challenge.util.Constants;
 import com.getontop.challenge.util.PaymentConstants;
 import com.google.gson.Gson;
@@ -14,11 +14,11 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
-public class PaymentMock {
+public class PaymentProviderMock {
 
     @Bean
-    public Payment paymentComponent(){
-        Payment paymentMock = mock(Payment.class);
+    public PaymentProvider paymentProviderComponent(){
+        PaymentProvider paymentMock = mock(PaymentProvider.class);
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentSuccessDto = gson.fromJson(Constants.PAYMENT_SUCCESS_BODY, CreatePaymentDto.class);
         CreatePaymentResponseDto createPaymentSuccessResponseDto = gson.fromJson(Constants.PAYMENT_SUCCESS_RESPONSE, CreatePaymentResponseDto.class);

@@ -3,8 +3,8 @@ package com.getontop.challenge.adapter;
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
 import com.getontop.challenge.exception.PaymentException;
-import com.getontop.challenge.mock.PaymentMock;
-import com.getontop.challenge.port.Payment;
+import com.getontop.challenge.mock.PaymentProviderMock;
+import com.getontop.challenge.port.PaymentProvider;
 import com.getontop.challenge.util.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,21 +20,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @Slf4j
-@ContextConfiguration(classes = {PaymentMock.class
+@ContextConfiguration(classes = {PaymentProviderMock.class
 })
 @ExtendWith(SpringExtension.class)
 @AutoConfigurationPackage
-class DefaultPaymentImplTest {
+class DefaultPaymentProviderImplTest {
 
     @Autowired
-    private Payment payment;
+    private PaymentProvider paymentProvider;
 
     @Test
     void testSuccessPayment() {
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentSuccessDto = gson.fromJson(Constants.PAYMENT_SUCCESS_BODY, CreatePaymentDto.class);
         CreatePaymentResponseDto createPaymentSuccessResponseDto = gson.fromJson(Constants.PAYMENT_SUCCESS_RESPONSE, CreatePaymentResponseDto.class);
-        CreatePaymentResponseDto paymentResponse = payment.doPayment(createPaymentSuccessDto);
+        CreatePaymentResponseDto paymentResponse = paymentProvider.doPayment(createPaymentSuccessDto);
         assertEquals(createPaymentSuccessResponseDto, paymentResponse);
     }
 
@@ -44,7 +44,7 @@ class DefaultPaymentImplTest {
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentInvalidDto = gson.fromJson(Constants.PAYMENT_INVALID_BODY, CreatePaymentDto.class);
         assertThrows(PaymentException.class, () -> {
-            payment.doPayment(createPaymentInvalidDto);
+            paymentProvider.doPayment(createPaymentInvalidDto);
         });
     }
 
@@ -53,7 +53,7 @@ class DefaultPaymentImplTest {
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentRejectedDto = gson.fromJson(Constants.PAYMENT_REJECTED_BODY, CreatePaymentDto.class);
         CreatePaymentResponseDto createPaymentRejectedResponseDto = gson.fromJson(Constants.PAYMENT_REJECTED_RESPONSE, CreatePaymentResponseDto.class);
-        CreatePaymentResponseDto paymentResponse = payment.doPayment(createPaymentRejectedDto);
+        CreatePaymentResponseDto paymentResponse = paymentProvider.doPayment(createPaymentRejectedDto);
         assertEquals(createPaymentRejectedResponseDto, paymentResponse);
     }
 
@@ -62,7 +62,7 @@ class DefaultPaymentImplTest {
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentTimeoutDto = gson.fromJson(Constants.PAYMENT_TIMEOUT_BODY, CreatePaymentDto.class);
         CreatePaymentResponseDto createPaymentTimeoutResponseDto = gson.fromJson(Constants.PAYMENT_TIMEOUT_RESPONSE, CreatePaymentResponseDto.class);
-        CreatePaymentResponseDto paymentResponse = payment.doPayment(createPaymentTimeoutDto);
+        CreatePaymentResponseDto paymentResponse = paymentProvider.doPayment(createPaymentTimeoutDto);
         assertEquals(createPaymentTimeoutResponseDto, paymentResponse);
     }
 }

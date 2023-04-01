@@ -44,3 +44,38 @@ Please look into the target/site/jacoco folder for de index.html file
 # ABOUT THE TECHNICAL TEST
 
 Please review the documentation contained in the "Ontop’s Challenge for backend with Java (English)" PDF file
+
+
+```mermaid
+classDiagram
+Payment --> PaymentData
+Payment --> PaymentProvider
+Payment --> PaymentController
+PaymentController <|-- PaymentControllerImpl
+PaymentProvider <|-- DefaultPaymentProviderImpl
+PaymentData <|-- PaymentDataImpl
+class Payment {
+  <<domain>>
+}
+class PaymentData {
+  <<port>>
+  Interface
+}  
+class PaymentProvider {
+  <<port>>
+  Interface
+}
+class PaymentController {
+  <<port>>
+  Interface
+}
+class PaymentControllerImpl {
+  <<adapter>>
+}
+class DefaultPaymentProviderImpl {
+  <<adapter>>
+}
+class PaymentDataImpl {
+  <<adapter>>
+}
+```
