@@ -79,3 +79,37 @@ class PaymentDataImpl {
   <<adapter>>
 }
 ```
+
+##Database model
+
+```mermaid
+erDiagram
+    ACCOUNTS ||--|{ ACCOUNTDESTINATIONS : has
+    ACCOUNTS {
+      int id
+      string name
+      string lastname
+      string routingnumber
+      string nationalidnumber
+      string accountnumber
+    }
+    ACCOUNTS ||--o{ ACCOUNTTRANSACTIONS : has
+    ACCOUNTDESTINATIONS {
+      int id
+      string name
+      string lastname
+      string routingnumber
+      string nationalidnumber
+      string accountnumber
+      int accountid
+    }
+    ACCOUNTTRANSACTIONS {
+      int id
+      int accountid
+      string description
+      double amount
+      string transactionid
+      timestamp transactiondate
+      string status
+    }
+```

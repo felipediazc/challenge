@@ -1,4 +1,4 @@
-package com.getontop.challenge.controller;
+package com.getontop.challenge.adapter.paymentcontroller;
 
 import com.getontop.challenge.domain.Payment;
 
