@@ -37,8 +37,7 @@ public class Accountdestination {
     private String nationalnumber;
 
     @Size(max = 40)
-    @NotNull
-    @Column(name = "accountnumber", nullable = false, length = 40)
+    @Column(name = "accountnumber", nullable = true, length = 40)
     private String accountnumber;
 
     @NotNull

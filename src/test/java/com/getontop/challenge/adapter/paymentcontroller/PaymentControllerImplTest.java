@@ -1,10 +1,7 @@
 package com.getontop.challenge.adapter.paymentcontroller;
 
 import com.getontop.challenge.domain.Payment;
-import com.getontop.challenge.dto.CreatePaymentResponseDto;
-import com.getontop.challenge.dto.PaymentInfoDto;
-import com.getontop.challenge.dto.PaymentPayloadDto;
-import com.getontop.challenge.dto.RequestInfoDto;
+import com.getontop.challenge.dto.*;
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -44,13 +41,14 @@ class PaymentControllerImplTest {
         paymentInfoDto.setId("A1111111");
         createPaymentResponseDto.setPaymentInfo(paymentInfoDto);
         createPaymentResponseDto.setRequestInfo(requestInfoDto);
-        when(payment.doPayment(1, 1, 20.0))
+        when(payment.doPayment(1, 1, 20.0, CurrencyEnum.USD))
                 .thenReturn(createPaymentResponseDto);
 
         PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
         paymentPayloadDto.setAmount(20.0);
         paymentPayloadDto.setAccountId(1);
         paymentPayloadDto.setAccountDestinationId(1);
+        paymentPayloadDto.setCurrency(CurrencyEnum.USD);
 
         Gson gson = new Gson();
         String jsonString = gson.toJson(paymentPayloadDto);

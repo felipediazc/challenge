@@ -18,4 +18,8 @@ public class AccountdestinationService {
     public Optional<Accountdestination> getAccountDestinationById(Integer accountDestinationId) {
         return accountdestinationRepository.findById(accountDestinationId);
     }
+
+    public Accountdestination save(Accountdestination accountdestination) {
+        return accountdestinationRepository.save(accountdestination);
+    }
 }

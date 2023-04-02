@@ -34,8 +34,13 @@ public class Accounttransaction {
 
     @Size(max = 40)
     @NotNull
-    @Column(name = "transactionid", nullable = false, length = 40)
-    private String transactionid;
+    @Column(name = "peertransactionid", nullable = false, length = 40)
+    private String peertransactionid;
+
+    @Size(max = 40)
+    @NotNull
+    @Column(name = "localtransactionid", nullable = false, length = 40)
+    private String localtransactionid;
 
     @Column(name = "transactiondate", nullable = false)
     @CreationTimestamp
