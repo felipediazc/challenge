@@ -108,7 +108,8 @@ erDiagram
       int accountid
       string description
       double amount
-      string transactionid
+      string peertransactionid
+      string localtransactionid      
       timestamp transactiondate
       string status
     }

@@ -37,14 +37,16 @@ public class PaymentDataImpl implements PaymentData {
     }
 
     @Override
-    public Accounttransaction setTransaction(PaymentPayloadDto paymentPayloadDto, PaymentStatus paymentStatus, String description, String transactionId) {
+    public Accounttransaction setTransaction(PaymentPayloadDto paymentPayloadDto, PaymentStatus paymentStatus, String description, String peerTransactionId,
+                                             String localTransactionId) {
         Accounttransaction accounttransaction = new Accounttransaction();
         accounttransaction.setAccountid(paymentPayloadDto.getAccountId());
         accounttransaction.setAmount(paymentPayloadDto.getAmount());
         accounttransaction.setStatus(paymentStatus.toString());
         accounttransaction.setDescription(description);
         accounttransaction.setTransactiondate(Instant.now());
-        accounttransaction.setTransactionid(transactionId);
+        accounttransaction.setPeertransactionid(peerTransactionId);
+        accounttransaction.setLocaltransactionid(localTransactionId);
         return accounttransactionService.save(accounttransaction);
     }
 }

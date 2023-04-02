@@ -3,13 +3,14 @@ package com.getontop.challenge.domain;
 import com.getontop.challenge.db.entity.Account;
 import com.getontop.challenge.db.entity.Accountdestination;
 import com.getontop.challenge.dto.*;
-import com.getontop.challenge.exception.PaymentException;
+import com.getontop.challenge.exception.PaymentException400;
 import com.getontop.challenge.port.PaymentData;
 import com.getontop.challenge.port.PaymentProvider;
 import com.getontop.challenge.util.PaymentConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class Payment {
@@ -49,12 +50,13 @@ public class Payment {
 
         Optional<Account> accountOptional = paymentData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
-            throw new PaymentException(PaymentConstants.ERROR_INVALID_ACCOUNT_ID);
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID,accountId));
         }
         Optional<Accountdestination> accountdestinationOptional = paymentData.getAccountDestinationById(accountDestinationId);
         if (accountdestinationOptional.isEmpty()) {
-            throw new PaymentException(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID);
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID,accountDestinationId));
         }
+        UUID localTransactionId = UUID.randomUUID();
         CreatePaymentDto createPaymentDto = new CreatePaymentDto();
         SourceDto sourceDto = getSourceDto(accountOptional.get(), currency);
         createPaymentDto.setSource(sourceDto);
@@ -62,7 +64,7 @@ public class Payment {
         createPaymentDto.setDestination(destinationDto);
         createPaymentDto.setAmount(amount);
 
-        CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto);
+        CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto, localTransactionId);
         /* falata meter en la base de datos*/
         /*falta agregar en la tabla de transacciones localtransactionid que guarda el record local*/
         return createPaymentResponseDto;
@@ -92,5 +94,10 @@ public class Payment {
         StringBuilder name = new StringBuilder(accountdestination.getName()).append(" ").append(accountdestination.getLastname());
         destinationDto.setName(name.toString());
         return destinationDto;
+    }
+
+    private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId){
+        StringBuilder sb = new StringBuilder(mainMsg).append(": ").append(accountId);
+        return sb.toString();
     }
 }

@@ -11,7 +11,8 @@ import java.util.Optional;
 
 public interface PaymentData {
 
-    Accounttransaction setTransaction(PaymentPayloadDto paymentPayloadDto, PaymentStatus paymentStatus, String description, String transactionId);
+    Accounttransaction setTransaction(PaymentPayloadDto paymentPayloadDto, PaymentStatus paymentStatus, String description, String peerTransactionId,
+                                      String localTransactionId);
 
     Optional<Account> getAccountById(Integer accountId);
 
