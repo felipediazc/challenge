@@ -11,4 +11,5 @@ public class PaymentPayloadDto {
     Integer accountId;
     Integer accountDestinationId;
     Double amount;
+    CurrencyEnum currency;
 }

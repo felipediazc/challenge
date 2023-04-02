@@ -1,4 +1,4 @@
-package com.getontop.challenge.adapter;
+package com.getontop.challenge.adapter.paymentprovider;
 
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
