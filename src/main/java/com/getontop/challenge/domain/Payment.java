@@ -25,7 +25,6 @@ public class Payment {
     }
 
     public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
-        Double transactionFee = 0.0;
         Optional<Account> accountOptional = onTopData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
@@ -35,10 +34,7 @@ public class Payment {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, walletId));
         }
         BalanceResponseDto balanceResponseDto = externalEndpointIntegration.getBalance(walletId);
-        if (balanceResponseDto.getBalance() >= amount) {
-            transactionFee = getTransactionFee(amount);
-            amount = amount - transactionFee;
-        } else {
+        if (balanceResponseDto.getBalance() < amount) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_NO_SUFFICIENT_FUNDS, accountId));
         }
         UUID localTransactionId = UUID.randomUUID();
@@ -57,9 +53,11 @@ public class Payment {
             paymentPayloadDto.setWalletId(walletId);
             paymentPayloadDto.setAmount(amount);
             String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
-            onTopData.setTransaction(accountOptional.get(), walletOptional.get(), amount, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
+            onTopData.setTransaction(accountOptional.get(), walletOptional.get(), amount, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId);
         }
 
+        Double transactionFee = PaymentConstants.getTransactionFee(amount);
+        amount = amount - transactionFee;
         WalletPayloadDto walletPayloadDto = new WalletPayloadDto((-1 * amount), walletId);
         externalEndpointIntegration.updateWallet(walletPayloadDto, localTransactionId);
         return createPaymentResponseDto;
@@ -95,7 +93,4 @@ public class Payment {
         return new StringBuilder(mainMsg).append(": ").append(accountId).toString();
     }
 
-    private Double getTransactionFee(Double amount) {
-        return (amount * 0.1);
-    }
 }

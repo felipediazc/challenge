@@ -7,11 +7,13 @@ import com.getontop.challenge.db.entity.Wallet;
 import com.getontop.challenge.db.entity.Transaction;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface OnTopData {
 
-    Transaction setTransaction(Account account, Wallet wallet, Double amount, PaymentStatus paymentStatus, String description, String peerTransactionId,
-                               String localTransactionId);
+    public Transaction setTransaction(Account account, Wallet wallet, Double amount,
+                                      PaymentStatus paymentStatus, String description,
+                                      String peerTransactionId, UUID localTransactionId);
 
     Optional<Account> getAccountById(Integer accountId);
 
