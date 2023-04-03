@@ -42,57 +42,56 @@ public class DefaultPaymentProviderImpl implements PaymentProvider {
     @Value("${webClientRetry:1}")
     private Integer webClientRetry;
 
+    private final Integer timeBetweenRetry = 2;
+
     @Override
     public CreatePaymentResponseDto doPayment(CreatePaymentDto createPaymentDto, final UUID localTransactionId) {
-        try {
-            HttpClient httpClient = HttpClient.create()
-                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, webClientTimeout)
-                    .responseTimeout(Duration.ofMillis(webClientTimeout))
-                    .doOnConnected(conn ->
-                            conn.addHandlerLast(new ReadTimeoutHandler(webClientTimeout, TimeUnit.MILLISECONDS))
-                                    .addHandlerLast(new WriteTimeoutHandler(webClientTimeout, TimeUnit.MILLISECONDS)));
+        log.info("Trying to send data to the endpoint. payload is: {}, localTransactionId: {}", createPaymentDto, localTransactionId);
+        HttpClient httpClient = HttpClient.create()
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, webClientTimeout)
+                .responseTimeout(Duration.ofMillis(webClientTimeout))
+                .doOnConnected(conn ->
+                        conn.addHandlerLast(new ReadTimeoutHandler(webClientTimeout, TimeUnit.MILLISECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(webClientTimeout, TimeUnit.MILLISECONDS)));
 
-            WebClient client = WebClient.builder()
-                    .clientConnector(new ReactorClientHttpConnector(httpClient))
-                    .baseUrl(paymentEndpoint)
-                    .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                    .build();
+        WebClient client = WebClient.builder()
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .baseUrl(paymentEndpoint)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .build();
 
-            Mono<CreatePaymentResponseDto> createPaymentResponseDtoMono = client.post()
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(createPaymentDto), CreatePaymentDto.class)
-                    .retrieve()
-                    .onStatus(httpStatusCode ->
-                            httpStatusCode.is4xxClientError(), clientResponse -> clientResponse.bodyToMono(String.class)
-                            .flatMap(errorBody -> Mono.error(new PaymentException400(getErrorMessage(errorBody, localTransactionId))))
-                    )
-                    .onStatus(httpStatusCode ->
-                            httpStatusCode.is5xxServerError(), clientResponse -> clientResponse.bodyToMono(String.class)
-                            .flatMap(errorBody -> Mono.error(new PaymentException500(getErrorMessage(errorBody, localTransactionId))))
-                    )
-                    .bodyToMono(CreatePaymentResponseDto.class)
-                    .retryWhen(Retry.fixedDelay(webClientRetry, Duration.ofSeconds(2))
-                            .filter(throwable -> throwable instanceof HttpServerErrorException ||
-                                    throwable instanceof WebClientRequestException)
-                            .doBeforeRetry(r -> log.warn("**** Retry {}", r))
-                            .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
-                                    new PaymentException500(retrySignal.failure().getMessage())));
-            CreatePaymentResponseDto createPaymentResponseDto = createPaymentResponseDtoMono.block();
-            log.info("Info has been sent to the endpoint. payload was: {}, response was: {}. localTransactionId: {}",
-                    createPaymentDto, createPaymentResponseDto, localTransactionId);
-            return createPaymentResponseDto;
-        } catch (Exception e) {
-            throw new PaymentException500(e.getMessage());
-        }
+        Mono<CreatePaymentResponseDto> createPaymentResponseDtoMono = client.post()
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(createPaymentDto), CreatePaymentDto.class)
+                .retrieve()
+                .onStatus(httpStatusCode ->
+                        httpStatusCode.is4xxClientError(), clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new PaymentException400(getErrorMessage(errorBody), localTransactionId)))
+                )
+                .onStatus(httpStatusCode ->
+                        httpStatusCode.is5xxServerError(), clientResponse -> clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new PaymentException500(getErrorMessage(errorBody), localTransactionId)))
+                )
+                .bodyToMono(CreatePaymentResponseDto.class)
+                .retryWhen(Retry.fixedDelay(webClientRetry, Duration.ofSeconds(timeBetweenRetry))
+                        .filter(throwable -> throwable instanceof HttpServerErrorException ||
+                                throwable instanceof WebClientRequestException)
+                        .doBeforeRetry(r -> log.warn("**** Retry {}", r))
+                        .onRetryExhaustedThrow((retryBackoffSpec, retrySignal) ->
+                                new PaymentException500(retrySignal.failure().getMessage(), localTransactionId)));
+        CreatePaymentResponseDto createPaymentResponseDto = createPaymentResponseDtoMono.block();
+        log.info("Info has been sent to the endpoint. payload was: {}, response was: {}. localTransactionId: {}",
+                createPaymentDto, createPaymentResponseDto, localTransactionId);
+        return createPaymentResponseDto;
     }
 
-    private String getErrorMessage(String message, final UUID localTransactionId) {
+    private String getErrorMessage(String message) {
         Gson gson = new Gson();
         try {
             CreatePaymentResponseDto createPaymentResponseDto = gson.fromJson(message, CreatePaymentResponseDto.class);
             String status = createPaymentResponseDto.getRequestInfo().getStatus();
             String error = createPaymentResponseDto.getRequestInfo().getError();
-            return new StringBuilder("Status: ").append(status).append(". ").append(error).append(" localTransactionId: ").append(localTransactionId).toString();
+            return new StringBuilder("Status: ").append(status).append(". ").append(error).toString();
         } catch (Exception e1) {
             try {
                 CreatePaymentResponseErrorDto createPaymentResponseErrorDto = gson.fromJson(message, CreatePaymentResponseErrorDto.class);

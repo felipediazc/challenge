@@ -24,7 +24,7 @@ public class SetupApplicationData {
     @PostConstruct
     public void init() {
         log.info("************************** SETTING INITIAL DATA ***********************");
-        getAccount(1, "Felipe", "Diaz", "0245253419",
+        getAccount(1, "ONTOP", "INC", "0245253419",
                 "028444018", "94453827");
         getAccountDestination(1, "TONY", "STARK", "1885226711",
                 "211927207", "1111111111", 1);

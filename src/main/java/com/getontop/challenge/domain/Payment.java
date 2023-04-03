@@ -1,5 +1,6 @@
 package com.getontop.challenge.domain;
 
+import com.getontop.challenge.adapter.paymentdata.PaymentStatus;
 import com.getontop.challenge.db.entity.Account;
 import com.getontop.challenge.db.entity.Accountdestination;
 import com.getontop.challenge.dto.*;
@@ -14,30 +15,7 @@ import java.util.UUID;
 
 @Service
 public class Payment {
-    private final String PAYLOAD = """
-                        {
-                "source": {
-                    "type": "COMPANY",
-                    "sourceInformation": {
-                        "name": "ONTOP INC"
-                    },
-                    "account": {
-                        "accountNumber": "0245253419",
-                        "currency": "USD",
-                        "routingNumber": "028444018"
-                    }
-                },
-                "destination": {
-                    "name": "TONY STARK",
-                    "account": {
-                        "accountNumber": "1885226711",
-                        "currency": "USD",
-                        "routingNumber": "211927207"
-                    }
-                },
-                "amount": 1000
-            }
-            """;
+
     private final PaymentProvider paymentProvider;
     private final PaymentData paymentData;
 
@@ -50,11 +28,11 @@ public class Payment {
 
         Optional<Account> accountOptional = paymentData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
-            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID,accountId));
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
         }
         Optional<Accountdestination> accountdestinationOptional = paymentData.getAccountDestinationById(accountDestinationId);
         if (accountdestinationOptional.isEmpty()) {
-            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID,accountDestinationId));
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, accountDestinationId));
         }
         UUID localTransactionId = UUID.randomUUID();
         CreatePaymentDto createPaymentDto = new CreatePaymentDto();
@@ -65,12 +43,19 @@ public class Payment {
         createPaymentDto.setAmount(amount);
 
         CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto, localTransactionId);
-        /* falata meter en la base de datos*/
-        /*falta agregar en la tabla de transacciones localtransactionid que guarda el record local*/
+        if (createPaymentResponseDto.getRequestInfo().getStatus().equalsIgnoreCase(PaymentConstants.ENDPOINT_PROCESSING_STATUS_STRING)) {
+            PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
+            paymentPayloadDto.setCurrency(currency);
+            paymentPayloadDto.setAccountId(accountId);
+            paymentPayloadDto.setAccountDestinationId(accountDestinationId);
+            paymentPayloadDto.setAmount(amount);
+            String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
+            paymentData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, String description, peerTransactionId, localTransactionId.toString());
+        }
         return createPaymentResponseDto;
     }
 
-    private SourceDto getSourceDto(Account account, CurrencyEnum currency){
+    private SourceDto getSourceDto(Account account, CurrencyEnum currency) {
         SourceDto sourceDto = new SourceDto();
         sourceDto.setType(SourceTypeEnum.COMPANY);
         SourceInformationDto sourceInformationDto = new SourceInformationDto();
@@ -84,7 +69,7 @@ public class Payment {
         return sourceDto;
     }
 
-    private DestinationDto getDestinationDto(Accountdestination accountdestination, CurrencyEnum currency){
+    private DestinationDto getDestinationDto(Accountdestination accountdestination, CurrencyEnum currency) {
         DestinationDto destinationDto = new DestinationDto();
         AccountDto accountDestinationDto = new AccountDto();
         accountDestinationDto.setCurrency(currency);
@@ -96,8 +81,7 @@ public class Payment {
         return destinationDto;
     }
 
-    private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId){
-        StringBuilder sb = new StringBuilder(mainMsg).append(": ").append(accountId);
-        return sb.toString();
+    private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId) {
+        return new StringBuilder(mainMsg).append(": ").append(accountId).toString();
     }
 }

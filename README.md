@@ -2,7 +2,7 @@
 
 * By Felipe Diaz C: [felipediazc@gmail.com](mailto:felipediazc@gmail.com)
 
-Disclaimer: Please use a Markdown editor/viewer with mermaid support in order to have access to the ERD diagram
+Disclaimer: Please use a Markdown editor/viewer with mermaid support in order to have access to the diagrams
 
 ### SOFTWARE REQUIREMENTS
 
@@ -31,7 +31,7 @@ mvn install dependency:copy-dependencies
 There is two alternatives to run de application
 
 1. mvn spring-boot:run
-2. java -jar target/rmm-0.0.1-SNAPSHOT.jar
+2. java -jar target/challenge-0.0.1-SNAPSHOT.jar
 
 ## ENDPOINTS
 
@@ -44,73 +44,3 @@ Please look into the target/site/jacoco folder for de index.html file
 # ABOUT THE TECHNICAL TEST
 
 Please review the documentation contained in the "Ontop’s Challenge for backend with Java (English)" PDF file
-
-
-```mermaid
-classDiagram
-Payment --> PaymentData
-Payment --> PaymentProvider
-Payment --> PaymentController
-PaymentController <|-- PaymentControllerImpl
-PaymentProvider <|-- DefaultPaymentProviderImpl
-PaymentData <|-- PaymentDataImpl
-class Payment {
-  <<domain>>
-}
-class PaymentData {
-  <<port>>
-  Interface
-}  
-class PaymentProvider {
-  <<port>>
-  Interface
-}
-class PaymentController {
-  <<port>>
-  Interface
-}
-class PaymentControllerImpl {
-  <<adapter>>
-}
-class DefaultPaymentProviderImpl {
-  <<adapter>>
-}
-class PaymentDataImpl {
-  <<adapter>>
-}
-```
-
-##Database model
-
-```mermaid
-erDiagram
-    ACCOUNTS ||--|{ ACCOUNTDESTINATIONS : has
-    ACCOUNTS {
-      int id
-      string name
-      string lastname
-      string routingnumber
-      string nationalidnumber
-      string accountnumber
-    }
-    ACCOUNTS ||--o{ ACCOUNTTRANSACTIONS : has
-    ACCOUNTDESTINATIONS {
-      int id
-      string name
-      string lastname
-      string routingnumber
-      string nationalidnumber
-      string accountnumber
-      int accountid
-    }
-    ACCOUNTTRANSACTIONS {
-      int id
-      int accountid
-      string description
-      double amount
-      string peertransactionid
-      string localtransactionid      
-      timestamp transactiondate
-      string status
-    }
-```
