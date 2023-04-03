@@ -12,8 +12,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "transactions")
-public class Transaction {
+@Table(name = "ontopcommissions")
+public class Ontopcommission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -21,18 +21,16 @@ public class Transaction {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "accountid", nullable = false)
-    private Account accountid;
+    @JoinColumn(name = "transactionid", nullable = false)
+    private Transaction transactionid;
+
+    @Column(name = "commissiondate", nullable = false)
+    @CreationTimestamp
+    private Instant commissiondate;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "walletid", nullable = false)
-    private Wallet walletid;
-
-    @Size(max = 100)
-    @NotNull
-    @Column(name = "description", nullable = false, length = 100)
-    private String description;
+    @Column(name = "comission", nullable = false)
+    private Double comission;
 
     @NotNull
     @Column(name = "amount", nullable = false)
@@ -47,10 +45,6 @@ public class Transaction {
     @NotNull
     @Column(name = "localtransactionid", nullable = false, length = 40)
     private String localtransactionid;
-
-    @Column(name = "transactiondate", nullable = false)
-    @CreationTimestamp
-    private Instant transactiondate;
 
     @Size(max = 20)
     @NotNull

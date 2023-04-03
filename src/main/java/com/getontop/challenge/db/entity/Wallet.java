@@ -46,7 +46,8 @@ public class Wallet {
     private String bankname;
 
     @NotNull
-    @Column(name = "accountid", nullable = false)
-    private Integer accountid;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "accountid", nullable = false)
+    private Account accountid;
 
 }

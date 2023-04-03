@@ -3,7 +3,7 @@ package com.getontop.challenge.mock;
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
 import com.getontop.challenge.exception.PaymentException400;
-import com.getontop.challenge.port.PaymentProvider;
+import com.getontop.challenge.port.ExternalEndpointIntegration;
 import com.getontop.challenge.util.Constants;
 import com.getontop.challenge.util.PaymentConstants;
 import com.google.gson.Gson;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 public class PaymentProviderMock {
 
     @Bean
-    public PaymentProvider paymentProviderComponent(){
-        PaymentProvider paymentMock = mock(PaymentProvider.class);
+    public ExternalEndpointIntegration paymentProviderComponent(){
+        ExternalEndpointIntegration paymentMock = mock(ExternalEndpointIntegration.class);
         Gson gson = new GsonBuilder().create();
         CreatePaymentDto createPaymentSuccessDto = gson.fromJson(Constants.PAYMENT_SUCCESS_BODY, CreatePaymentDto.class);
         CreatePaymentResponseDto createPaymentSuccessResponseDto = gson.fromJson(Constants.PAYMENT_SUCCESS_RESPONSE, CreatePaymentResponseDto.class);
