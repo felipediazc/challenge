@@ -178,14 +178,14 @@ A[User] -->|sends accountId,\n walletId, amount,\n currency|B(Payment domain)
 
 ```mermaid
 erDiagram
-    ACCOUNTS ||--|{ TRANSACTIONS : has
+    ACCOUNTS ||--o{ TRANSACTIONS : could_have
     ACCOUNTS {
       int id
       string name
       string routingnumber
       string accountnumber
     }
-    ACCOUNTS ||--o{ WALLETS : has
+    ACCOUNTS ||--o{ WALLETS : could_have
     WALLETS {
       int id
       string name
@@ -196,7 +196,7 @@ erDiagram
       string bankname
       int accountid
     }
-    WALLETS ||--|{ TRANSACTIONS : has
+    WALLETS ||--o{ TRANSACTIONS : could_have
     TRANSACTIONS {
       int id
       int accountid
@@ -206,6 +206,17 @@ erDiagram
       string peertransactionid
       string localtransactionid      
       timestamp transactiondate
+      string status
+    }
+    TRANSACTIONS ||--|{ ONTOPCOMMISSIONS : has
+    ONTOPCOMMISSIONS {
+      int id
+      int transactionid
+      timestamp commissiondate
+      double comission
+      double amount
+      string peertransactionid
+      string localtransactionid      
       string status
     }
 ```

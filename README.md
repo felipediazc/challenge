@@ -41,6 +41,19 @@ http://localhost:8080/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-confi
 
 Please look into the target/site/jacoco folder for de index.html file
 
+## H2 CONSOLE
+
+In order to see data saved into the H2 database, please go to the following URL:
+
+http://localhost:8080/h2-console/
+
+And use the following connection parameters:
+
+        url: jdbc:h2:mem:ontopchallengedb
+        username: sa
+        password: sa
+
+
 # ABOUT THE TECHNICAL TEST
 
 Please review the documentation contained in the "Ontop’s Challenge for backend with Java (English)" PDF file
