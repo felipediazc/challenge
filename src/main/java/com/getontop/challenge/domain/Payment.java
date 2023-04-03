@@ -2,7 +2,7 @@ package com.getontop.challenge.domain;
 
 import com.getontop.challenge.adapter.paymentdata.PaymentStatus;
 import com.getontop.challenge.db.entity.Account;
-import com.getontop.challenge.db.entity.Accountdestination;
+import com.getontop.challenge.db.entity.Wallet;
 import com.getontop.challenge.dto.*;
 import com.getontop.challenge.exception.PaymentException400;
 import com.getontop.challenge.port.PaymentData;
@@ -24,21 +24,21 @@ public class Payment {
         this.paymentData = paymentData;
     }
 
-    public CreatePaymentResponseDto doPayment(Integer accountId, Integer accountDestinationId, Double amount, CurrencyEnum currency) {
+    public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
 
         Optional<Account> accountOptional = paymentData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
         }
-        Optional<Accountdestination> accountdestinationOptional = paymentData.getAccountDestinationById(accountDestinationId);
-        if (accountdestinationOptional.isEmpty()) {
-            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, accountDestinationId));
+        Optional<Wallet> walletOptional = paymentData.getWalletById(walletId);
+        if (walletOptional.isEmpty()) {
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, walletId));
         }
         UUID localTransactionId = UUID.randomUUID();
         CreatePaymentDto createPaymentDto = new CreatePaymentDto();
         SourceDto sourceDto = getSourceDto(accountOptional.get(), currency);
         createPaymentDto.setSource(sourceDto);
-        DestinationDto destinationDto = getDestinationDto(accountdestinationOptional.get(), currency);
+        DestinationDto destinationDto = getDestinationDto(walletOptional.get(), currency);
         createPaymentDto.setDestination(destinationDto);
         createPaymentDto.setAmount(amount);
 
@@ -47,10 +47,10 @@ public class Payment {
             PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
             paymentPayloadDto.setCurrency(currency);
             paymentPayloadDto.setAccountId(accountId);
-            paymentPayloadDto.setAccountDestinationId(accountDestinationId);
+            paymentPayloadDto.setWalletId(walletId);
             paymentPayloadDto.setAmount(amount);
             String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
-            paymentData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, String description, peerTransactionId, localTransactionId.toString());
+            paymentData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
         }
         return createPaymentResponseDto;
     }
@@ -59,7 +59,7 @@ public class Payment {
         SourceDto sourceDto = new SourceDto();
         sourceDto.setType(SourceTypeEnum.COMPANY);
         SourceInformationDto sourceInformationDto = new SourceInformationDto();
-        sourceInformationDto.setName(PaymentConstants.DEFAULT_COMPANY_NAME);
+        sourceInformationDto.setName(account.getName());
         sourceDto.setSourceInformation(sourceInformationDto);
         AccountDto accountSourceDto = new AccountDto();
         accountSourceDto.setAccountNumber(account.getAccountnumber());
@@ -69,14 +69,14 @@ public class Payment {
         return sourceDto;
     }
 
-    private DestinationDto getDestinationDto(Accountdestination accountdestination, CurrencyEnum currency) {
+    private DestinationDto getDestinationDto(Wallet wallet, CurrencyEnum currency) {
         DestinationDto destinationDto = new DestinationDto();
-        AccountDto accountDestinationDto = new AccountDto();
-        accountDestinationDto.setCurrency(currency);
-        accountDestinationDto.setAccountNumber(accountdestination.getAccountnumber());
-        accountDestinationDto.setRoutingNumber(accountdestination.getRoutingnumber());
-        destinationDto.setAccount(accountDestinationDto);
-        StringBuilder name = new StringBuilder(accountdestination.getName()).append(" ").append(accountdestination.getLastname());
+        AccountDto accountDto = new AccountDto();
+        accountDto.setCurrency(currency);
+        accountDto.setAccountNumber(wallet.getAccountnumber());
+        accountDto.setRoutingNumber(wallet.getRoutingnumber());
+        destinationDto.setAccount(accountDto);
+        StringBuilder name = new StringBuilder(wallet.getName()).append(" ").append(wallet.getLastname());
         destinationDto.setName(name.toString());
         return destinationDto;
     }

@@ -155,36 +155,52 @@ class PaymentDataImpl {
 }
 ```
 
-##Payment sequence diagram
+##Payment flowchart
 
 The payment operation is the most complex of this entire project, since it interacts with several points, it must calculate the commission and it must also be persisted in the database.
+
+```mermaid
+graph LR
+A[Usere] -->|sends accountId,\n walletId, amount,\n currency|B(Payment domain)
+    B --> C{accountId exist}
+    C -->|Yes| D{walletId exist}
+    C -->|No| E[Error - exit]
+    D -->|Yes| F{there is balance\n for debit}
+    D -->|No| E[Error - exit]
+    F -->|No| E[Error - exit]
+    F -->|Yes| G[Do Payment]
+    G -->H[Update wallet]
+```
+
+
 
 ##Database model
 
 ```mermaid
 erDiagram
-    ACCOUNTS ||--|{ ACCOUNTDESTINATIONS : has
+    ACCOUNTS ||--|{ TRANSACTIONS : has
     ACCOUNTS {
       int id
       string name
-      string lastname
       string routingnumber
-      string nationalidnumber
       string accountnumber
     }
-    ACCOUNTS ||--o{ ACCOUNTTRANSACTIONS : has
-    ACCOUNTDESTINATIONS {
+    ACCOUNTS ||--o{ WALLETS : has
+    WALLETS {
       int id
       string name
       string lastname
       string routingnumber
       string nationalidnumber
       string accountnumber
+      string bankname
       int accountid
     }
-    ACCOUNTTRANSACTIONS {
+    WALLETS ||--|{ TRANSACTIONS : has
+    TRANSACTIONS {
       int id
       int accountid
+      int walletid
       string description
       double amount
       string peertransactionid

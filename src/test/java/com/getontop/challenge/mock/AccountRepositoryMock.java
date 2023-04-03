@@ -18,10 +18,8 @@ public class AccountRepositoryMock {
         Account account = new Account();
         account.setId(1);
         account.setName("Felipe");
-        account.setLastname("Diaz C");
         account.setRoutingnumber("R1");
         account.setAccountnumber("A1");
-        account.setNationalnumber("N1");
         AccountRepository accountRepository = mock(AccountRepository.class);
         when(accountRepository.findById(1)).thenReturn(Optional.of(account));
         return accountRepository;

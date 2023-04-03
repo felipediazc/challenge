@@ -47,7 +47,7 @@ class PaymentControllerImplTest {
         PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
         paymentPayloadDto.setAmount(20.0);
         paymentPayloadDto.setAccountId(1);
-        paymentPayloadDto.setAccountDestinationId(1);
+        paymentPayloadDto.setWalletId(1);
         paymentPayloadDto.setCurrency(CurrencyEnum.USD);
 
         Gson gson = new Gson();

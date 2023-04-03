@@ -18,11 +18,11 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PaymentException400.class)
     public final ResponseEntity<Object> handleBadRequestException(PaymentException400 ex, WebRequest request) {
-        log.error("Payment exception. status: {}. message: {}", 400, ex.getMessage());
         String localTransactionId = "";
         if (ex.getLocalTransactionId() != null) {
             localTransactionId = ex.getLocalTransactionId().toString();
         }
+        log.error("Payment exception. status: {}. message: {}. localTransactionId {}", 400, ex.getMessage(), localTransactionId);
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false), localTransactionId);
         return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
@@ -30,11 +30,11 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(PaymentException500.class)
     public final ResponseEntity<Object> handleInternalServerErrorException(PaymentException500 ex, WebRequest request) {
-        log.error("Payment exception. status: {}. message: {}", 500, ex.getMessage());
         String localTransactionId = "";
         if (ex.getLocalTransactionId() != null) {
             localTransactionId = ex.getLocalTransactionId().toString();
         }
+        log.error("Payment exception. status: {}. message: {}. localTransactionId {}", 500, ex.getMessage(), localTransactionId);
         ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
                 request.getDescription(false), localTransactionId);
         return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "accountdestinations")
-public class Accountdestination {
+@Table(name = "wallets")
+public class Wallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -33,12 +33,17 @@ public class Accountdestination {
 
     @Size(max = 40)
     @NotNull
-    @Column(name = "nationalnumber", nullable = false, length = 40)
-    private String nationalnumber;
+    @Column(name = "nationalidnumber", nullable = false, length = 40)
+    private String nationalidnumber;
 
     @Size(max = 40)
     @Column(name = "accountnumber", nullable = true, length = 40)
     private String accountnumber;
+
+    @Size(max = 40)
+    @NotNull
+    @Column(name = "bankname", nullable = false, length = 40)
+    private String bankname;
 
     @NotNull
     @Column(name = "accountid", nullable = false)
