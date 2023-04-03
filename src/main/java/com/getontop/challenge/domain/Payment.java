@@ -57,7 +57,7 @@ public class Payment {
             paymentPayloadDto.setWalletId(walletId);
             paymentPayloadDto.setAmount(amount);
             String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
-            onTopData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
+            onTopData.setTransaction(accountOptional.get(), walletOptional.get(), amount, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
         }
 
         WalletPayloadDto walletPayloadDto = new WalletPayloadDto((-1 * amount), walletId);

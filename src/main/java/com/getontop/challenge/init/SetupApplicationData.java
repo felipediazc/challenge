@@ -24,30 +24,30 @@ public class SetupApplicationData {
     @PostConstruct
     public void init() {
         log.info("************************** SETTING INITIAL DATA ***********************");
-        setAccount(1, "ONTOP INC", "0245253419",
+        Account account = setAccount(1, "ONTOP INC", "0245253419",
                 "028444018");
         setWallet(1, "TONY", "STARK", "1885226711",
-                "211927207", "1111111111", 1, "BANK1");
+                "211927207", "1111111111", account, "BANK1");
         setWallet(2, "TONY", "STARK", null,
-                "211927207", "1111111111", 1, "BANK1");
+                "211927207", "1111111111", account, "BANK1");
         setWallet(3, "JAMES", "FAILED", "1885226711",
-                "211927207", "1111111112", 1, "BANK1");
+                "211927207", "1111111112", account, "BANK1");
         setWallet(4, "JAMES", "TIMEOUT", "1885226711",
-                "211927207", "1111111113", 1, "BANK1");
+                "211927207", "1111111113", account, "BANK1");
     }
 
-    private void setAccount(Integer id, String name, String accountNumber,
+    private Account setAccount(Integer id, String name, String accountNumber,
                                String routingNumber) {
         Account account = new Account();
         account.setId(id);
         account.setName(name);
         account.setAccountnumber(accountNumber);
         account.setRoutingnumber(routingNumber);
-        accountService.save(account);
+        return accountService.save(account);
     }
 
     private void setWallet(Integer id, String name, String lastname, String accountNumber,
-                                         String routingNumber, String nationalNumber, Integer accountId,
+                                         String routingNumber, String nationalNumber, Account account,
                                          String bankName) {
         Wallet wallet = new Wallet();
         wallet.setId(id);
@@ -56,7 +56,7 @@ public class SetupApplicationData {
         wallet.setAccountnumber(accountNumber);
         wallet.setRoutingnumber(routingNumber);
         wallet.setNationalidnumber(nationalNumber);
-        wallet.setAccountid(accountId);
+        wallet.setAccountid(account);
         wallet.setBankname(bankName);
         walletService.save(wallet);
     }

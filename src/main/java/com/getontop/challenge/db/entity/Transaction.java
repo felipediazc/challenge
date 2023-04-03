@@ -20,12 +20,14 @@ public class Transaction {
     private Integer id;
 
     @NotNull
-    @Column(name = "accountid", nullable = false)
-    private Integer accountid;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "accountid", nullable = false)
+    private Account accountid;
 
     @NotNull
-    @Column(name = "walletid", nullable = false)
-    private Integer walletid;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "walletid", nullable = false)
+    private Wallet walletid;
 
     @Size(max = 100)
     @NotNull

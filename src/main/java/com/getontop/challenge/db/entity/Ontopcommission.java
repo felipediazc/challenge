@@ -18,8 +18,9 @@ public class Ontopcommission {
     private Integer id;
 
     @NotNull
-    @Column(name = "transactionid", nullable = false)
-    private Integer transactionid;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "transactionid", nullable = false)
+    private Transaction transactionid;
 
     @NotNull
     @Column(name = "commissiondate", nullable = false)

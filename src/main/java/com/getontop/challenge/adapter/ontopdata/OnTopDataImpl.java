@@ -6,7 +6,6 @@ import com.getontop.challenge.db.entity.Transaction;
 import com.getontop.challenge.domain.AccountService;
 import com.getontop.challenge.domain.WalletService;
 import com.getontop.challenge.domain.TransactionService;
-import com.getontop.challenge.dto.PaymentPayloadDto;
 import com.getontop.challenge.port.OnTopData;
 import org.springframework.stereotype.Service;
 
@@ -37,12 +36,13 @@ public class OnTopDataImpl implements OnTopData {
     }
 
     @Override
-    public Transaction setTransaction(PaymentPayloadDto paymentPayloadDto, PaymentStatus paymentStatus, String description, String peerTransactionId,
+    public Transaction setTransaction(Account account, Wallet wallet, Double amount, PaymentStatus paymentStatus, String description, String peerTransactionId,
                                       String localTransactionId) {
+
         Transaction transaction = new Transaction();
-        transaction.setAccountid(paymentPayloadDto.getAccountId());
-        transaction.setWalletid(paymentPayloadDto.getWalletId());
-        transaction.setAmount(paymentPayloadDto.getAmount());
+        transaction.setAccountid(account);
+        transaction.setWalletid(wallet);
+        transaction.setAmount(amount);
         transaction.setStatus(paymentStatus.toString());
         transaction.setDescription(description);
         transaction.setTransactiondate(Instant.now());
