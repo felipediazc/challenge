@@ -25,7 +25,7 @@ public class Payment {
     }
 
     public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
-
+        Double transactionFee = 0.0;
         Optional<Account> accountOptional = onTopData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
@@ -33,6 +33,13 @@ public class Payment {
         Optional<Wallet> walletOptional = onTopData.getWalletById(walletId);
         if (walletOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, walletId));
+        }
+        BalanceResponseDto balanceResponseDto = externalEndpointIntegration.getBalance(walletId);
+        if (balanceResponseDto.getBalance() >= amount) {
+            transactionFee = getTransactionFee(amount);
+            amount = amount - transactionFee;
+        } else {
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_NO_SUFFICIENT_FUNDS, accountId));
         }
         UUID localTransactionId = UUID.randomUUID();
         CreatePaymentDto createPaymentDto = new CreatePaymentDto();
@@ -52,6 +59,9 @@ public class Payment {
             String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
             onTopData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
         }
+
+        WalletPayloadDto walletPayloadDto = new WalletPayloadDto((-1 * amount), walletId);
+        externalEndpointIntegration.updateWallet(walletPayloadDto, localTransactionId);
         return createPaymentResponseDto;
     }
 
@@ -83,5 +93,9 @@ public class Payment {
 
     private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId) {
         return new StringBuilder(mainMsg).append(": ").append(accountId).toString();
+    }
+
+    private Double getTransactionFee(Double amount) {
+        return (amount * 0.1);
     }
 }

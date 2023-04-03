@@ -50,9 +50,9 @@ public class Transaction {
     @CreationTimestamp
     private Instant transactiondate;
 
-    @Size(max = 10)
+    @Size(max = 20)
     @NotNull
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status", nullable = false, length = 20)
     private String status;
 
 }
