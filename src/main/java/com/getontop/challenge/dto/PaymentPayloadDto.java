@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentPayloadDto {
     Integer accountId;
-    Integer accountDestinationId;
+    Integer walletId;
     Double amount;
+    CurrencyEnum currency;
 }

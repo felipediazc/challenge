@@ -1,48 +1,87 @@
 package com.getontop.challenge.domain;
 
-import com.getontop.challenge.dto.CreatePaymentDto;
-import com.getontop.challenge.dto.CreatePaymentResponseDto;
+import com.getontop.challenge.adapter.paymentdata.PaymentStatus;
+import com.getontop.challenge.db.entity.Account;
+import com.getontop.challenge.db.entity.Wallet;
+import com.getontop.challenge.dto.*;
+import com.getontop.challenge.exception.PaymentException400;
+import com.getontop.challenge.port.PaymentData;
 import com.getontop.challenge.port.PaymentProvider;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.getontop.challenge.util.PaymentConstants;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class Payment {
-    private final String PAYLOAD = """
-                        {
-                "source": {
-                    "type": "COMPANY",
-                    "sourceInformation": {
-                        "name": "ONTOP INC"
-                    },
-                    "account": {
-                        "accountNumber": "0245253419",
-                        "currency": "USD",
-                        "routingNumber": "028444018"
-                    }
-                },
-                "destination": {
-                    "name": "TONY STARK",
-                    "account": {
-                        "accountNumber": "1885226711",
-                        "currency": "USD",
-                        "routingNumber": "211927207"
-                    }
-                },
-                "amount": 1000
-            }
-            """;
+
     private final PaymentProvider paymentProvider;
-    public Payment(final PaymentProvider paymentProvider){
+    private final PaymentData paymentData;
+
+    public Payment(final PaymentProvider paymentProvider, PaymentData paymentData) {
         this.paymentProvider = paymentProvider;
+        this.paymentData = paymentData;
     }
 
-    public CreatePaymentResponseDto doPayment(Integer accountId, Integer accountDestinationId, Double amount){
-        CreatePaymentDto createPaymentDto;
-        Gson gson = new GsonBuilder().create();
-        createPaymentDto = gson.fromJson(PAYLOAD, CreatePaymentDto.class);
-        CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto);
+    public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
+
+        Optional<Account> accountOptional = paymentData.getAccountById(accountId);
+        if (accountOptional.isEmpty()) {
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
+        }
+        Optional<Wallet> walletOptional = paymentData.getWalletById(walletId);
+        if (walletOptional.isEmpty()) {
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, walletId));
+        }
+        UUID localTransactionId = UUID.randomUUID();
+        CreatePaymentDto createPaymentDto = new CreatePaymentDto();
+        SourceDto sourceDto = getSourceDto(accountOptional.get(), currency);
+        createPaymentDto.setSource(sourceDto);
+        DestinationDto destinationDto = getDestinationDto(walletOptional.get(), currency);
+        createPaymentDto.setDestination(destinationDto);
+        createPaymentDto.setAmount(amount);
+
+        CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto, localTransactionId);
+        if (createPaymentResponseDto.getRequestInfo().getStatus().equalsIgnoreCase(PaymentConstants.ENDPOINT_PROCESSING_STATUS_STRING)) {
+            PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
+            paymentPayloadDto.setCurrency(currency);
+            paymentPayloadDto.setAccountId(accountId);
+            paymentPayloadDto.setWalletId(walletId);
+            paymentPayloadDto.setAmount(amount);
+            String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
+            paymentData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
+        }
         return createPaymentResponseDto;
+    }
+
+    private SourceDto getSourceDto(Account account, CurrencyEnum currency) {
+        SourceDto sourceDto = new SourceDto();
+        sourceDto.setType(SourceTypeEnum.COMPANY);
+        SourceInformationDto sourceInformationDto = new SourceInformationDto();
+        sourceInformationDto.setName(account.getName());
+        sourceDto.setSourceInformation(sourceInformationDto);
+        AccountDto accountSourceDto = new AccountDto();
+        accountSourceDto.setAccountNumber(account.getAccountnumber());
+        accountSourceDto.setRoutingNumber(account.getRoutingnumber());
+        accountSourceDto.setCurrency(currency);
+        sourceDto.setAccount(accountSourceDto);
+        return sourceDto;
+    }
+
+    private DestinationDto getDestinationDto(Wallet wallet, CurrencyEnum currency) {
+        DestinationDto destinationDto = new DestinationDto();
+        AccountDto accountDto = new AccountDto();
+        accountDto.setCurrency(currency);
+        accountDto.setAccountNumber(wallet.getAccountnumber());
+        accountDto.setRoutingNumber(wallet.getRoutingnumber());
+        destinationDto.setAccount(accountDto);
+        StringBuilder name = new StringBuilder(wallet.getName()).append(" ").append(wallet.getLastname());
+        destinationDto.setName(name.toString());
+        return destinationDto;
+    }
+
+    private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId) {
+        return new StringBuilder(mainMsg).append(": ").append(accountId).toString();
     }
 }

@@ -95,6 +95,8 @@
                 <configuration>
                     <excludes>
                         <exclude>com/getontop/challenge/dto/*</exclude>
+                        <exclude>com/getontop/challenge/db/entity/*</exclude>
+                        <exclude>com/getontop/challenge/db/repository/*</exclude>
                         <exclude>com/getontop/challenge/util/*</exclude>
                         <exclude>com/getontop/challenge/ChallengeApplication*</exclude>
                     </excludes>
