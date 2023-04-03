@@ -23,18 +23,9 @@ public class Account {
 
     @Size(max = 40)
     @NotNull
-    @Column(name = "lastname", nullable = false, length = 40)
-    private String lastname;
-
-    @Size(max = 40)
-    @NotNull
     @Column(name = "routingnumber", nullable = false, length = 40)
     private String routingnumber;
 
-    @Size(max = 40)
-    @NotNull
-    @Column(name = "nationalnumber", nullable = false, length = 40)
-    private String nationalnumber;
 
     @Size(max = 40)
     @NotNull

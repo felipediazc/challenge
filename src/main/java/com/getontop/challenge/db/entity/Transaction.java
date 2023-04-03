@@ -12,8 +12,8 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "accounttransactions")
-public class Accounttransaction {
+@Table(name = "transactions")
+public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -22,6 +22,10 @@ public class Accounttransaction {
     @NotNull
     @Column(name = "accountid", nullable = false)
     private Integer accountid;
+
+    @NotNull
+    @Column(name = "walletid", nullable = false)
+    private Integer walletid;
 
     @Size(max = 100)
     @NotNull

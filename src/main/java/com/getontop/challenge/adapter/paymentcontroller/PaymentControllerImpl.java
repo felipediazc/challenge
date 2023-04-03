@@ -23,6 +23,6 @@ public class PaymentControllerImpl implements PaymentController {
     @Override
     public CreatePaymentResponseDto doPayment(PaymentPayloadDto paymentPayloadDto) {
         log.info("Getting payment request with date {}", paymentPayloadDto);
-        return payment.doPayment(paymentPayloadDto.getAccountId(), paymentPayloadDto.getAccountDestinationId(), paymentPayloadDto.getAmount(), paymentPayloadDto.getCurrency());
+        return payment.doPayment(paymentPayloadDto.getAccountId(), paymentPayloadDto.getWalletId(), paymentPayloadDto.getAmount(), paymentPayloadDto.getCurrency());
     }
 }
