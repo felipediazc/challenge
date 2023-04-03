@@ -1,4 +1,4 @@
-package com.getontop.challenge.adapter.paymentdata;
+package com.getontop.challenge.adapter.ontopdata;
 
 import com.getontop.challenge.db.entity.Account;
 import com.getontop.challenge.db.entity.Wallet;
@@ -7,20 +7,20 @@ import com.getontop.challenge.domain.AccountService;
 import com.getontop.challenge.domain.WalletService;
 import com.getontop.challenge.domain.TransactionService;
 import com.getontop.challenge.dto.PaymentPayloadDto;
-import com.getontop.challenge.port.PaymentData;
+import com.getontop.challenge.port.OnTopData;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Optional;
 
 @Service
-public class PaymentDataImpl implements PaymentData {
+public class OnTopDataImpl implements OnTopData {
 
     private final AccountService accountService;
     private final WalletService walletService;
     private final TransactionService transactionService;
 
-    public PaymentDataImpl(AccountService accountService, WalletService walletService, TransactionService transactionService) {
+    public OnTopDataImpl(AccountService accountService, WalletService walletService, TransactionService transactionService) {
         this.accountService = accountService;
         this.walletService = walletService;
         this.transactionService = transactionService;

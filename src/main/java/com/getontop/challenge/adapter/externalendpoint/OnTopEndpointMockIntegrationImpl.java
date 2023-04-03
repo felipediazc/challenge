@@ -1,11 +1,11 @@
-package com.getontop.challenge.adapter.paymentprovider;
+package com.getontop.challenge.adapter.externalendpoint;
 
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
 import com.getontop.challenge.dto.CreatePaymentResponseErrorDto;
 import com.getontop.challenge.exception.PaymentException400;
 import com.getontop.challenge.exception.PaymentException500;
-import com.getontop.challenge.port.PaymentProvider;
+import com.getontop.challenge.port.ExternalEndpointIntegration;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-public class DefaultPaymentProviderImpl implements PaymentProvider {
+public class OnTopEndpointMockIntegrationImpl implements ExternalEndpointIntegration {
 
 
     @Value("${paymentEndpoint}")

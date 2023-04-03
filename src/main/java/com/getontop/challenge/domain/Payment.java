@@ -1,12 +1,12 @@
 package com.getontop.challenge.domain;
 
-import com.getontop.challenge.adapter.paymentdata.PaymentStatus;
+import com.getontop.challenge.adapter.ontopdata.PaymentStatus;
 import com.getontop.challenge.db.entity.Account;
 import com.getontop.challenge.db.entity.Wallet;
 import com.getontop.challenge.dto.*;
 import com.getontop.challenge.exception.PaymentException400;
-import com.getontop.challenge.port.PaymentData;
-import com.getontop.challenge.port.PaymentProvider;
+import com.getontop.challenge.port.OnTopData;
+import com.getontop.challenge.port.ExternalEndpointIntegration;
 import com.getontop.challenge.util.PaymentConstants;
 import org.springframework.stereotype.Service;
 
@@ -16,21 +16,21 @@ import java.util.UUID;
 @Service
 public class Payment {
 
-    private final PaymentProvider paymentProvider;
-    private final PaymentData paymentData;
+    private final ExternalEndpointIntegration externalEndpointIntegration;
+    private final OnTopData onTopData;
 
-    public Payment(final PaymentProvider paymentProvider, PaymentData paymentData) {
-        this.paymentProvider = paymentProvider;
-        this.paymentData = paymentData;
+    public Payment(final ExternalEndpointIntegration externalEndpointIntegration, OnTopData onTopData) {
+        this.externalEndpointIntegration = externalEndpointIntegration;
+        this.onTopData = onTopData;
     }
 
     public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
 
-        Optional<Account> accountOptional = paymentData.getAccountById(accountId);
+        Optional<Account> accountOptional = onTopData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
         }
-        Optional<Wallet> walletOptional = paymentData.getWalletById(walletId);
+        Optional<Wallet> walletOptional = onTopData.getWalletById(walletId);
         if (walletOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_DESTINATION_ID, walletId));
         }
@@ -42,7 +42,7 @@ public class Payment {
         createPaymentDto.setDestination(destinationDto);
         createPaymentDto.setAmount(amount);
 
-        CreatePaymentResponseDto createPaymentResponseDto = paymentProvider.doPayment(createPaymentDto, localTransactionId);
+        CreatePaymentResponseDto createPaymentResponseDto = externalEndpointIntegration.doPayment(createPaymentDto, localTransactionId);
         if (createPaymentResponseDto.getRequestInfo().getStatus().equalsIgnoreCase(PaymentConstants.ENDPOINT_PROCESSING_STATUS_STRING)) {
             PaymentPayloadDto paymentPayloadDto = new PaymentPayloadDto();
             paymentPayloadDto.setCurrency(currency);
@@ -50,7 +50,7 @@ public class Payment {
             paymentPayloadDto.setWalletId(walletId);
             paymentPayloadDto.setAmount(amount);
             String peerTransactionId = createPaymentResponseDto.getPaymentInfo().getId();
-            paymentData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
+            onTopData.setTransaction(paymentPayloadDto, PaymentStatus.IN_PROGRESS, "String description", peerTransactionId, localTransactionId.toString());
         }
         return createPaymentResponseDto;
     }

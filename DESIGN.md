@@ -57,14 +57,14 @@ Bearing in mind that the mock could be changed to a real solution and that the d
 
 ```mermaid
 classDiagram
-Wallet --> WalletData
+Wallet --> OnTopData
 Wallet --> WalletController
 WalletController <|-- WalletControllerImpl
-WalletData <|-- WalletDataImpl
+OnTopData <|-- OnTopDataImpl
 class Wallet {
   <<domain>>
 }
-class WalletData {
+class OnTopData {
   <<port>>
   Interface
 }  
@@ -77,7 +77,7 @@ class WalletControllerImpl {
   RestController for enable and endpoint
   to save and recover bank account data  
 }
-class WalletDataImpl {
+class OnTopDataImpl {
   <<adapter>>
   Implementation with database storage
   to keep user wallet and bank account data
@@ -88,20 +88,20 @@ class WalletDataImpl {
 
 ```mermaid
 classDiagram
-Payment --> PaymentData
-Payment --> PaymentProvider
+Payment --> OnTopData
+Payment --> ExternalEndpointIntegration
 Payment --> PaymentController
 PaymentController <|-- PaymentControllerImpl
-PaymentProvider <|-- DefaultPaymentProviderImpl
-PaymentData <|-- PaymentDataImpl
+ExternalEndpointIntegration <|-- OnToEndpointMockIntegrationImpl
+OnTopData <|-- OnTopDataImpl
 class Payment {
   <<domain>>
 }
-class PaymentData {
+class OnTopData {
   <<port>>
   Interface
 }  
-class PaymentProvider {
+class ExternalEndpointIntegration {
   <<port>>
   Interface
 }
@@ -114,11 +114,11 @@ class PaymentControllerImpl {
   RestController to serve as endpoint
   for bank transactions
 }
-class DefaultPaymentProviderImpl {
+class OnToEndpointMockIntegrationImpl {
   <<adapter>>
   Connection to and external endpoint
 }
-class PaymentDataImpl {
+class OnTopDataImpl {
   <<adapter>>
   Implementation with database storage
   to keep user transactions data
@@ -128,14 +128,14 @@ class PaymentDataImpl {
 
 ```mermaid
 classDiagram
-Transaction --> PaymentData
+Transaction --> OnTopData
 Transaction --> TransactionController
 TransactionController <|-- TransactionControllerImpl
-PaymentData <|-- PaymentDataImpl
+OnTopData <|-- OnTopDataImpl
 class Transaction {
   <<domain>>
 }
-class PaymentData {
+class OnTopData {
   <<port>>
   Interface
 }  
@@ -148,7 +148,7 @@ class TransactionControllerImpl {
   RestController to serve as endpoint
   for get transactions history
 }
-class PaymentDataImpl {
+class OnTopDataImpl {
   <<adapter>>
   Implementation with database storage
   to keep user transactions data
@@ -161,7 +161,7 @@ The payment operation is the most complex of this entire project, since it inter
 
 ```mermaid
 graph LR
-A[Usere] -->|sends accountId,\n walletId, amount,\n currency|B(Payment domain)
+A[User] -->|sends accountId,\n walletId, amount,\n currency|B(Payment domain)
     B --> C{accountId exist}
     C -->|Yes| D{walletId exist}
     C -->|No| E[Error - exit]

@@ -5,7 +5,7 @@ import com.getontop.challenge.dto.CreatePaymentResponseDto;
 
 import java.util.UUID;
 
-public interface PaymentProvider {
+public interface ExternalEndpointIntegration {
 
     CreatePaymentResponseDto doPayment(final CreatePaymentDto createPaymentDto, final UUID localTransactionId);
 
