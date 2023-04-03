@@ -22,6 +22,7 @@ public class AccountRepositoryMock {
         account.setAccountnumber("A1");
         AccountRepository accountRepository = mock(AccountRepository.class);
         when(accountRepository.findById(1)).thenReturn(Optional.of(account));
+        when(accountRepository.save(account)).thenReturn(account);
         return accountRepository;
     }
 }

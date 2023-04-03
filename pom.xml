@@ -99,6 +99,7 @@
                         <exclude>com/getontop/challenge/db/repository/*</exclude>
                         <exclude>com/getontop/challenge/util/*</exclude>
                         <exclude>com/getontop/challenge/ChallengeApplication*</exclude>
+                        <exclude>com/getontop/challenge/exception/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
