@@ -25,7 +25,6 @@ public class OnTopDataImpl implements OnTopData {
     private final AccountService accountService;
     private final WalletService walletService;
     private final TransactionService transactionService;
-
     private final OntopcommissionService ontopcommissionService;
 
     public OnTopDataImpl(AccountService accountService, WalletService walletService,
@@ -76,6 +75,7 @@ public class OnTopDataImpl implements OnTopData {
             ontopcommission.setTransactionid(transaction);
             ontopcommission.setLocaltransactionid(localTransactionId.toString());
             ontopcommission.setPeertransactionid(peerTransactionId);
+            ontopcommissionService.save(ontopcommission);
             return transaction;
         } catch (Exception e) {
             throw new PaymentException500("Error on data persistence " + e.getMessage(), localTransactionId);

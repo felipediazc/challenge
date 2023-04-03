@@ -25,6 +25,9 @@ public class Payment {
     }
 
     public CreatePaymentResponseDto doPayment(Integer accountId, Integer walletId, Double amount, CurrencyEnum currency) {
+        if(amount <= 0){
+            throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_AMOUNT, amount));
+        }
         Optional<Account> accountOptional = onTopData.getAccountById(accountId);
         if (accountOptional.isEmpty()) {
             throw new PaymentException400(getPaymentExceptionErrorMsg(PaymentConstants.ERROR_INVALID_ACCOUNT_ID, accountId));
@@ -91,6 +94,9 @@ public class Payment {
 
     private String getPaymentExceptionErrorMsg(String mainMsg, Integer accountId) {
         return new StringBuilder(mainMsg).append(": ").append(accountId).toString();
+    }
+    private String getPaymentExceptionErrorMsg(String mainMsg, Double amount) {
+        return new StringBuilder(mainMsg).append(": ").append(amount).toString();
     }
 
 }
