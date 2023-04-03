@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 
@@ -22,8 +23,8 @@ public class Ontopcommission {
     @JoinColumn(name = "transactionid", nullable = false)
     private Transaction transactionid;
 
-    @NotNull
     @Column(name = "commissiondate", nullable = false)
+    @CreationTimestamp
     private Instant commissiondate;
 
     @NotNull
