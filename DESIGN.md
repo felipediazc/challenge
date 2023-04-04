@@ -7,15 +7,9 @@ Please review the documentation contained in the "Ontop’s Challenge for backen
 There are two actors identified in this code challenge: USERr who is the client of ONTOP and ONTOP who also has shares in the software  
 
 ##USER use cases
-```plantuml
-@startuml
-        actor USER
-        USER -> "Add bank account"
-        USER -> "Transfer Money"
-        "Transfer Money" -> "Consult bank data"
-        USER -> "View transactions"
-@enduml
-```
+
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/felipediazc/UML-in-Markdown-Public/main/UML/ONTOP_Challenge_usecase1.puml)
+
 **Add bank account:** the User add its bank account details in order to do money transfers with ONTOP. This data must be stred in some place
 
 **Transfer money:** The user transfers money from his wallet to his bank account. This operation has to consult if there are funds for transfer in the user's wallet (it uses an external webservice for this purpose), then it uses an external web service for money transfer and finales uses an other web service to update wallet balance. Not all bank transactions are sucessfully, so there must be an trasfer status for comision discount or for rever the transaction  
@@ -25,14 +19,9 @@ There are two actors identified in this code challenge: USERr who is the client 
 **View transactions:** All transactions must be stored in some place for reporting purposes
 
 ##ONTOP use cases
-```plantuml
-@startuml
-        actor ONTOP
-        ONTOP -> "Debit 10% per transaction"
-        ONTOP -> "Update transaction status"
-        ONTOP -> "Update USER wallet balace"
-@enduml
-```
+
+![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/felipediazc/UML-in-Markdown-Public/main/UML/ONTOP_Challenge_usecase2.puml)
+
 **Debit 10% per transaction:** When a transaction is done, ONTOP gets 10% of it. These are the posible scenarios:
 * A transaction is done with status "Processing". the comision is billed but it stays with IN_PROGRESS status. The transaction information is saved for tracking purposes  
 * A transaction is done with status "Success". the comision is billed with COMPLETED status. The transaction information is saved for tracking purposes.
