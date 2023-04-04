@@ -6,7 +6,7 @@ Please review the documentation contained in the "Ontop’s Challenge for backen
 
 There are two actors identified in this code challenge: USERr who is the client of ONTOP and ONTOP who also has shares in the software  
 
-##USER use cases
+## USER use cases
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/felipediazc/UML-in-Markdown-Public/main/UML/ONTOP_Challenge_usecase1.puml)
 
@@ -18,7 +18,7 @@ There are two actors identified in this code challenge: USERr who is the client 
 
 **View transactions:** All transactions must be stored in some place for reporting purposes
 
-##ONTOP use cases
+## ONTOP use cases
 
 ![Class Diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.githubusercontent.com/felipediazc/UML-in-Markdown-Public/main/UML/ONTOP_Challenge_usecase2.puml)
 
@@ -33,7 +33,7 @@ There are two actors identified in this code challenge: USERr who is the client 
 
 **Update USER wallet balance** Update this data accordinf the sucessfull, pending, failed and reverted transactions
 
-##Hexagonal architecture
+## Hexagonal architecture
 
 We have identified 3 domains: Payments, transactions and wallets
 the domains interact with different data providers:
@@ -42,7 +42,7 @@ the domains interact with different data providers:
 
 Bearing in mind that the mock could be changed to a real solution and that the data store could be anything, the best aproach is to use the port - adapter pattern.
 
-##Wallet 
+## Wallet 
 
 ```mermaid
 classDiagram
@@ -73,7 +73,7 @@ class OnTopDataImpl {
 }
 ```
 
-##Payment 
+## Payment 
 
 ```mermaid
 classDiagram
@@ -113,7 +113,7 @@ class OnTopDataImpl {
   to keep user transactions data
 }
 ```
-##Transaction 
+## Transaction 
 
 ```mermaid
 classDiagram
@@ -144,7 +144,7 @@ class OnTopDataImpl {
 }
 ```
 
-##Payment flowchart
+## Payment flowchart
 
 The payment operation is the most complex of this entire project, since it interacts with several points, it must calculate the commission and it must also be persisted in the database.
 
@@ -161,7 +161,7 @@ A[User] -->|sends accountId,\n walletId, amount,\n currency|B(Payment domain)
     G -->H[Update wallet]
 ```
 
-##Status codes
+## Status codes
 
 The following codes are saved with the transaction record according its posible scenarios.
 * `COMPLETED`: The Ontop Mock server responses with a sucessfull status, then the transaction is complete.
@@ -170,7 +170,7 @@ The following codes are saved with the transaction record according its posible 
 * `REFUNDED`: After the transaction is FAILED, then the money is refunded and a record is created with this status 
 
 
-##Webservices to be implemented
+## Webservices to be implemented
 
 **1. SAVING BANK ACCOUNT DETAILS**
 It is going to be used to storage user's bank account.
@@ -335,7 +335,7 @@ GET /api/v1/transactions?page=1&size=10&walletid=2&startdate=2023-01-01&enddate=
       }
 ```
 
-##Database model
+## Database model
 
 ```mermaid
 erDiagram
@@ -382,7 +382,7 @@ erDiagram
     }
 ```
 
-##Data dictionary
+## Data dictionary
 
 | Field                    | description                                              |
 |--------------------------|----------------------------------------------------------|
@@ -407,14 +407,14 @@ erDiagram
 | ONTOPCOMMISIONS.amount   | Amount of money (the original amount)                    |
 
 
-##Considerations regarding the connection with the Mocks endpoints
+## Considerations regarding the connection with the Mocks endpoints
 
 Because the system depends on an external system, it may be susceptible to failure and therefore recovery mechanisms must be in place in this case. All The connections with external endpoints must have:
 
 1. Timeout: the connection timeout must be defined and this must be configurable (ex. webClientTimeout=5000 for 5s)
 2. Retrys: There should be retries after a timeout occurs and this should be configurable (ex. webClientRetry=3 for 3 retrys)
 
-##Considerations regarding the logs
+## Considerations regarding the logs
 
 Because the payments endpoint invokes 3 external endpoints and persistence operations in the database, there is the possibility that at some point there is an error and the resulting operation is not consistent, these are possible scenarios in which this can happen:
 
@@ -424,7 +424,7 @@ Because the payments endpoint invokes 3 external endpoints and persistence opera
 
 To recover these failures, each of the steps that make up the payment operation must be recorded in a log and must have a unique identifier that allows tracking a transaction. In this way, in case of failures, the transaction can be identified, where it failed and therefore be able to make the corresponding corrective measures.
 
-##What is missing? What would I have wanted to do but didn't do due to lack of time?
+## What is missing? What would I have wanted to do but didn't do due to lack of time?
 
 1. Fix the data model, allow a wallet user to have several bank accounts to which they can transfer their money.
 
