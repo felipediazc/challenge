@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class BalanceResponseDto {
-    private Double balance;
+public class WalletPayloadDto {
+    private Double amount;
     @JsonProperty("user_id")
     private Integer walletId;
 }
