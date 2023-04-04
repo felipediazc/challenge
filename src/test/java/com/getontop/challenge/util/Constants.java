@@ -136,6 +136,11 @@ public class Constants {
             }
             """;
 
+    public static final String PAYMENT_INVALID_BODY_RESPONSE = """
+            {
+                "error": "body is invalid, check postman collection example"
+            }
+            """;
     public static final String PAYMENT_TIMEOUT_RESPONSE = """
             {
                 "requestInfo": {
@@ -175,6 +180,34 @@ public class Constants {
             }
             """;
 
+    public static final String BALANCE_RESPONSE = """
+            {
+                "balance": 2500,
+                "user_id": 1000
+            }
+            """;
+
+    public static final String WALLET_SUCCESS_RESPONSE = """
+            {
+                "wallet_transaction_id": 75040,
+                "amount": 2000,
+                "user_id": 1000
+            }
+            """;
+
+    public static final String WALLET_INVALID_BODY_RESPONSE = """
+            {
+                "code": "INVALID_BODY",
+                "message": "amount and user_id must not be null"
+            }
+            """;
+
+    public static final String WALLET_GENERIC_ERROR_RESPONSE = """
+            {
+                "code": "GENERIC_ERROR",
+                "message": "something bad happened"
+            }
+            """;
     public static Account setAccount(Integer id, String name, String accountNumber,
                                      String routingNumber) {
         Account account = new Account();
