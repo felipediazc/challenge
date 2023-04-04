@@ -166,13 +166,6 @@ public class Constants {
                 "amount": 2000
             }
             """;
-
-    public static final String WALLET_INVALID_USER_PAYLOAD = """
-            {
-                "amount": 2000,
-                "user_id": 404
-            }
-            """;
     public static final String WALLET_GENERIC_ERROR_PAYLOAD = """
             {
                 "amount": 2000,
@@ -208,6 +201,7 @@ public class Constants {
                 "message": "something bad happened"
             }
             """;
+
     public static Account setAccount(Integer id, String name, String accountNumber,
                                      String routingNumber) {
         Account account = new Account();
