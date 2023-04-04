@@ -3,7 +3,7 @@ package com.getontop.challenge.adapter;
 import com.getontop.challenge.dto.CreatePaymentDto;
 import com.getontop.challenge.dto.CreatePaymentResponseDto;
 import com.getontop.challenge.exception.PaymentException400;
-import com.getontop.challenge.mock.PaymentProviderMock;
+import com.getontop.challenge.mock.ExternalEndpointIntegrationMock;
 import com.getontop.challenge.port.ExternalEndpointIntegration;
 import com.getontop.challenge.util.Constants;
 import com.google.gson.Gson;
@@ -19,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@ContextConfiguration(classes = {PaymentProviderMock.class
+@ContextConfiguration(classes = {ExternalEndpointIntegrationMock.class
 })
 @ExtendWith(SpringExtension.class)
 @AutoConfigurationPackage
